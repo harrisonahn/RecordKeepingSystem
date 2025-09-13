@@ -45,10 +45,14 @@ public class CodeTestApplication implements CommandLineRunner {
             } catch (ParseException e) {
                 LOG.error("Failed to parse transaction: ", e);
             }
+            assert transaction != null;
             LOG.debug("Parsed transaction: {}", transaction.toString());
             if (Transaction.Type.CONTRIBUTION.equals(transaction.getType())) {
                 Contribution contribution = transaction.toContribution();
                 reconciliationService.reconcileContribution(contribution);
+            } else if (Transaction.Type.TRADE_SETTLEMENT.equals(transaction.getType())){
+                TradeSettlement tradeSettlement = transaction.toTradeSettlement();
+                reconciliationService.reconcileTradeSettlement(tradeSettlement);
             }
         });
     }

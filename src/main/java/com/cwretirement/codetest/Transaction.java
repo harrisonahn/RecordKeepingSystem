@@ -7,13 +7,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.cwretirement.codetest.TradeSettlement.Type.SALE;
+
 public class Transaction {
 
     public enum Type {
-        CONTRIBUTION;
+        CONTRIBUTION, TRADE_SETTLEMENT;
 
-        private static final Map<String, Type> TRANSACTION_DESCRIPTION_TO_TRANSACTION_TYPE = new HashMap<String, Type>() {{
+        private static final Map<String, Type> TRANSACTION_DESCRIPTION_TO_TRANSACTION_TYPE = new HashMap<>() {{
             put("Contribution", CONTRIBUTION);
+            put("Purchase Cash Settlement", TRADE_SETTLEMENT);
+            put("Sale Cash Settlement", TRADE_SETTLEMENT);
         }};
 
         public static Type fromString(String string) {
@@ -23,22 +27,21 @@ public class Transaction {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yy");
 
-    private long acct;
-    private String acctNm;
-    private Date entered;
-    private Date posted;
-    private Date dateSettled;
-    private Date dateTraded;
-    private String transactionDescription;
-    private BigDecimal quantity;
-    private BigDecimal rate;
-    private String descr;
-    private BigDecimal amount;
-    private String symbolCusip;
-    private String explanation;
-    private long job;
-
-    private Type type;
+    private final long acct;
+    private final String acctNm;
+    private final Date entered;
+    private final Date posted;
+    private final Date dateSettled;
+    private final Date dateTraded;
+    private final String transactionDescription;
+    private final BigDecimal quantity;
+    private final BigDecimal rate;
+    private final String descr;
+    private final BigDecimal amount;
+    private final String symbolCusip;
+    private final String explanation;
+    private final long job;
+    private final Type type;
 
     public Transaction(String[] fields) throws ParseException {
         acct = Long.parseLong(fields[0]);
@@ -55,7 +58,6 @@ public class Transaction {
         symbolCusip = fields[11];
         explanation = fields[12];
         job = Long.parseLong(fields[13]);
-
         type = Type.fromString(transactionDescription);
     }
 
@@ -85,7 +87,7 @@ public class Transaction {
 
     public Contribution toContribution() {
         assert Type.CONTRIBUTION.equals(type);
-        Contribution result = new Contribution(
+        return new Contribution(
                 Long.parseLong(explanation),
                 descr,
                 entered,
@@ -93,6 +95,22 @@ public class Transaction {
                 amount,
                 job
         );
-        return result;
+    }
+
+    public TradeSettlement toTradeSettlement() {
+        assert Type.TRADE_SETTLEMENT.equals(type);
+        return new TradeSettlement(
+                TradeSettlement.Type.fromString(transactionDescription),
+                entered,
+                posted,
+                dateSettled,
+                dateTraded,
+                quantity,
+                rate,
+                descr,
+                amount,
+                symbolCusip,
+                job
+        );
     }
 }

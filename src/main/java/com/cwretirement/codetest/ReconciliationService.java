@@ -25,16 +25,23 @@ public class ReconciliationService {
     private String tradeSettlementReconciliationURL;
 
     public void reconcileContribution(Contribution contribution) {
-        URL url;
+        reconcile(contributionReconciliationURL, contribution);
+    }
+
+    public void reconcileTradeSettlement(TradeSettlement tradeSettlement) {
+        reconcile(tradeSettlementReconciliationURL, tradeSettlement);
+    }
+
+    private void reconcile(String urlString, Object payload) {
         try {
-            url = URI.create(contributionReconciliationURL).toURL();
+            URL url = URI.create(urlString).toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(1000 * 5);
             connection.setReadTimeout(1000 * 5);
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
-            final String jsonString = contribution.toString();
+            final String jsonString = payload.toString();
             byte[] representation = jsonString.getBytes(StandardCharsets.UTF_8);
             connection.setFixedLengthStreamingMode(representation.length);
             connection.setRequestProperty("Content-Type", "application/json; utf-8");
@@ -55,9 +62,5 @@ public class ReconciliationService {
         } catch (IOException e) {
             throw new ReconciliationException(ReconciliationException.Type.SERVICE_UNAVAILABLE, e);
         }
-    }
-
-    public void reconcileTradeSettlement(TradeSettlement tradeSettlement) {
-        // TODO: fill in
     }
 }
