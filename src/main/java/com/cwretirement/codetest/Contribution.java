@@ -10,12 +10,12 @@ import java.util.Objects;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Contribution {
-    private long memberAccountId;
-    private String transactionId;
-    private Date dateEntered;
-    private Date datePosted;
-    private BigDecimal amount;
-    private long custodianReference;
+    private final long memberAccountId;
+    private final String transactionId;
+    private final Date dateEntered;
+    private final Date datePosted;
+    private final BigDecimal amount;
+    private final long custodianReference;
 
     public Contribution(long memberAccountId, String transactionId, Date dateEntered, Date datePosted, BigDecimal amount, long custodianReference) {
         this.memberAccountId = memberAccountId;
@@ -43,14 +43,18 @@ public class Contribution {
         Contribution that = (Contribution) o;
         return memberAccountId == that.memberAccountId &&
                 custodianReference == that.custodianReference &&
-                transactionId.equals(that.transactionId) &&
-                dateEntered.equals(that.dateEntered) &&
-                datePosted.equals(that.datePosted) &&
-                amount.equals(that.amount);
+                Objects.equals(transactionId, that.transactionId) &&
+                Objects.equals(dateEntered, that.dateEntered) &&
+                Objects.equals(datePosted, that.datePosted) &&
+                Objects.equals(amount, that.amount);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(memberAccountId, transactionId, dateEntered, datePosted, amount, custodianReference);
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
     }
 }
